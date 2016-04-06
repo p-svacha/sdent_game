@@ -1,9 +1,13 @@
 fileFormatVersion: 2
 guid: 2e4234be6a3495e41a64bd9de0528866
-timeCreated: 1459946862
+timeCreated: 1459947682
 licenseType: Free
 TextureImporter:
-  fileIDToRecycleName: {}
+  fileIDToRecycleName:
+    21300000: main_char_walking_0
+    21300002: main_char_walking_1
+    21300004: main_char_walking_2
+    21300006: main_char_walking_3
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -29,27 +33,105 @@ TextureImporter:
   textureFormat: -1
   maxTextureSize: 2048
   textureSettings:
-    filterMode: -1
-    aniso: -1
+    filterMode: 0
+    aniso: 16
     mipBias: -1
-    wrapMode: -1
-  nPOTScale: 1
+    wrapMode: 1
+  nPOTScale: 0
   lightmap: 0
   rGBM: 0
   compressionQuality: 50
   allowsAlphaSplitting: 0
-  spriteMode: 0
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spritePixelsToUnits: 100
-  alphaIsTransparency: 0
-  textureType: -1
+  alphaIsTransparency: 1
+  textureType: 8
   buildTargetSettings: []
   spriteSheet:
-    sprites: []
+    sprites:
+    - name: main_char_walking_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -8, y: 17}
+        - {x: -18, y: 13}
+        - {x: -18, y: -13}
+        - {x: -16, y: -24}
+        - {x: 17, y: -24}
+        - {x: 18, y: -17}
+        - {x: 18, y: 7}
+        - {x: 9, y: 17}
+    - name: main_char_walking_1
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 11, y: 18}
+        - {x: -9, y: 18}
+        - {x: -18, y: 15}
+        - {x: -18, y: -13}
+        - {x: -16, y: -24}
+        - {x: 9, y: -24}
+        - {x: 18, y: -16}
+        - {x: 18, y: 3}
+        - {x: 16, y: 15}
+    - name: main_char_walking_2
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -9, y: 17}
+        - {x: -18, y: 14}
+        - {x: -18, y: -22}
+        - {x: -10, y: -24}
+        - {x: 12, y: -24}
+        - {x: 18, y: -15}
+        - {x: 18, y: 2}
+        - {x: 8, y: 17}
+    - name: main_char_walking_3
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 11, y: 18}
+        - {x: -9, y: 18}
+        - {x: -18, y: 15}
+        - {x: -18, y: -13}
+        - {x: -16, y: -24}
+        - {x: 9, y: -24}
+        - {x: 18, y: -16}
+        - {x: 18, y: 3}
+        - {x: 16, y: 15}
     outline: []
   spritePackingTag: 
   userData: 
