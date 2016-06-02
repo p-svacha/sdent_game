@@ -17,20 +17,29 @@ class GridMove : MonoBehaviour
     private bool correctDiagonalSpeed = true;
     private Vector2 input;
     private bool isMoving = false;
-    private bool isColliding = false;
     private Vector3 startPosition;
     private Vector3 endPosition;
     private float t;
-    private float factor;
+    private float factor = 1f;
     Animator anim;
+
+    private GameObject rock;
+    private PolygonCollider2D coll;
 
     public void Start()
     {
         anim = GetComponent<Animator>();
+        rock = GameObject.Find("Collision");
+        coll = rock.GetComponent<PolygonCollider2D>();
     }
 
     public void Update()
     {
+
+        anim.SetBool("is_walking", isMoving);
+        anim.SetFloat("input_x", input.x);
+        anim.SetFloat("input_y", input.y);
+
         if (!isMoving)
         {
             input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
@@ -50,18 +59,34 @@ class GridMove : MonoBehaviour
 
             if (input != Vector2.zero)
             {
-                StartCoroutine(move(transform));
+                if (t < 1f)
+                {
+                    t += Time.deltaTime * (moveSpeed / gridSize) * factor;
+                }
+                else
+                {
+                    move();
+                }
+            }
+        }
+
+        if(isMoving)
+        {
+            if(t < 1f) { 
+                t += Time.deltaTime * (moveSpeed / gridSize) * factor;
+                transform.position = Vector3.Lerp(startPosition, endPosition, t);
+                cam.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
+            }
+            else
+            {
+                isMoving = false;
             }
         }
     }
 
-    public IEnumerator move(Transform transform)
+    public void move()
     {
         isMoving = true;
-
-        anim.SetBool("is_walking", true);
-        anim.SetFloat("input_x", input.x);
-        anim.SetFloat("input_y", input.y);
 
         startPosition = transform.position;
         t = 0;
@@ -70,42 +95,21 @@ class GridMove : MonoBehaviour
         {
             endPosition = new Vector3(startPosition.x + System.Math.Sign(input.x) * gridSize,
                 startPosition.y, startPosition.z + System.Math.Sign(input.y) * gridSize);
+
         }
         else
         {
             endPosition = new Vector3(startPosition.x + System.Math.Sign(input.x) * gridSize,
                 startPosition.y + System.Math.Sign(input.y) * gridSize, startPosition.z);
         }
-
-        if (allowDiagonals && correctDiagonalSpeed && input.x != 0 && input.y != 0)
-        {
-            factor = 0.7071f;
-        }
-        else
-        {
-            factor = 1f;
-        }
-
-        while (t < 1f)
-        {
-            t += Time.deltaTime * (moveSpeed / gridSize) * factor;
-            transform.position = Vector3.Lerp(startPosition, endPosition, t);
-            cam.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
-            yield return null;
-            if (isColliding)
-            {
-                break;
-            }
-        }
-
-        anim.SetBool("is_walking", false);
-        isMoving = false;
-        isColliding = false;
-        yield return 0;
     }
 
-    void OnCollisionEnter2D(Collision2D collider)
+    public void OnCollisionEnter2D(Collision2D coll)
     {
-        isColliding = true;
+        if (coll.gameObject.name == "Collision")
+        {
+            isMoving = false;
+            transform.position = startPosition;
+        }
     }
 }
