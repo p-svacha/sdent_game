@@ -2,9 +2,10 @@
 using System.Collections;
 
 public class PlayerMovement : MonoBehaviour {
-
+    
 	Rigidbody2D rBody;
 	Animator anim;
+    public Camera cam;
 
 	// Use this for initialization
 	void Start () {
@@ -29,5 +30,6 @@ public class PlayerMovement : MonoBehaviour {
         }
 
         rBody.MovePosition(rBody.position + movementVector * Time.deltaTime);
-	}
+        cam.transform.position = new Vector3(rBody.position.x, rBody.position.y, -10);
+    }
 }
