@@ -7,44 +7,47 @@ class GridMove : MonoBehaviour
     public float gridSize = 1f;
     public Camera cam;
 
+    private enum MovementState
+    {
+        Sliding,
+        Moving,
+        Collided,
+        Standing
+    }
+
     private enum Orientation
     {
         Horizontal,
         Vertical
     };
     private Orientation gridOrientation = Orientation.Horizontal;
-    private bool allowDiagonals = false;
-    private bool correctDiagonalSpeed = true;
+    private MovementState movementState = MovementState.Standing;
+
     private Vector2 input;
-    private bool isMoving = false;
     private Vector3 startPosition;
     private Vector3 endPosition;
-    private float t;
+    private float t = 0;
     private float factor = 1f;
     Animator anim;
-
-    private GameObject rock;
-    private PolygonCollider2D coll;
 
     public void Start()
     {
         anim = GetComponent<Animator>();
-        rock = GameObject.Find("Collision");
-        coll = rock.GetComponent<PolygonCollider2D>();
     }
 
     public void Update()
     {
-
-        anim.SetBool("is_walking", isMoving);
+        Debug.Log(movementState);
+        anim.SetBool("is_walking", movementState == MovementState.Moving);
         anim.SetFloat("input_x", input.x);
         anim.SetFloat("input_y", input.y);
 
-        if (!isMoving)
+        
+
+        switch (movementState)
         {
-            input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-            if (!allowDiagonals)
-            {
+            case MovementState.Standing:
+                input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
                 if (Mathf.Abs(input.x) > Mathf.Abs(input.y))
                 {
                     input.y = 0;
@@ -55,39 +58,54 @@ class GridMove : MonoBehaviour
                     input.x = 0;
                     gridOrientation = Orientation.Vertical;
                 }
-            }
 
-            if (input != Vector2.zero)
-            {
+
+                if (input != Vector2.zero)
+                {
+                    if (t < 1f)
+                    {
+                        t += Time.deltaTime * (moveSpeed / gridSize) * factor;
+                    }
+                    else
+                    {
+                        movementState = MovementState.Moving;
+                        move();
+                    }
+                }
+                break;
+
+            case MovementState.Moving:
                 if (t < 1f)
                 {
                     t += Time.deltaTime * (moveSpeed / gridSize) * factor;
+                    transform.position = Vector3.Lerp(startPosition, endPosition, t);
+                    cam.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
+                }
+                else
+                {
+                    movementState = MovementState.Standing;
+                }
+                break;
+
+            case MovementState.Sliding:
+                input = new Vector2(input.x, input.y);
+                if (t < 1f)
+                {
+                    t += Time.deltaTime * (moveSpeed / gridSize) * factor;
+                    transform.position = Vector3.Lerp(startPosition, endPosition, t);
+                    cam.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
                 }
                 else
                 {
                     move();
                 }
-            }
-        }
+                break;
 
-        if(isMoving)
-        {
-            if(t < 1f) { 
-                t += Time.deltaTime * (moveSpeed / gridSize) * factor;
-                transform.position = Vector3.Lerp(startPosition, endPosition, t);
-                cam.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
-            }
-            else
-            {
-                isMoving = false;
-            }
         }
     }
 
     public void move()
     {
-        isMoving = true;
-
         startPosition = transform.position;
         t = 0;
 
@@ -106,10 +124,22 @@ class GridMove : MonoBehaviour
 
     public void OnCollisionEnter2D(Collision2D coll)
     {
-        if (coll.gameObject.name == "Collision")
+        if(coll.gameObject.tag == "Ice")
         {
-            isMoving = false;
+            movementState = MovementState.Sliding;
+        }
+        if (coll.gameObject.tag == "Wall")
+        {
+            if(movementState == MovementState.Moving)
+            {
+                movementState = MovementState.Standing;
+            }
+            else
+            {
+                movementState = MovementState.Collided;
+            }
             transform.position = startPosition;
         }
+        
     }
 }
