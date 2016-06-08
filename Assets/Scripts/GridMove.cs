@@ -113,12 +113,12 @@ class GridMove : MonoBehaviour
 
         if (gridOrientation == Orientation.Horizontal)
         {
-            endPosition = new Vector3(startPosition.x + gridSize, startPosition.y, startPosition.z);
+            endPosition = new Vector3(startPosition.x + System.Math.Sign(input.x) * gridSize, startPosition.y, startPosition.z);
 
         }
         else
         {
-            endPosition = new Vector3(startPosition.x, startPosition.y + gridSize, startPosition.z);
+            endPosition = new Vector3(startPosition.x, startPosition.y + System.Math.Sign(input.y) * gridSize, startPosition.z);
         }
     }
 
