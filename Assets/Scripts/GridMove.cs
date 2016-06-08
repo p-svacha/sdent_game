@@ -3,17 +3,9 @@ using UnityEngine;
 
 class GridMove : MonoBehaviour
 {
-    public float moveSpeed = 3f;
-    public float gridSize = 1f;
-    public Camera cam;
 
-    private enum MovementState
-    {
-        Sliding,
-        Moving,
-        Collided,
-        Standing
-    }
+    public float gridSize;
+    public Camera cam;
 
     private enum Orientation
     {
@@ -21,125 +13,106 @@ class GridMove : MonoBehaviour
         Vertical
     };
     private Orientation gridOrientation = Orientation.Horizontal;
-    private MovementState movementState = MovementState.Standing;
+
+    private int x, y, targetX, targetY;
+    private bool moving;
+    private bool sliding;
+    private Rigidbody2D rBody;
+    private GameObject mapLogic;
+    private MapLogic map;
 
     private Vector2 input;
     private Vector3 startPosition;
     private Vector3 endPosition;
+
     private float t = 0;
-    private float factor = 1f;
+    private float factor;
     Animator anim;
 
     public void Start()
     {
+        rBody = GetComponent<Rigidbody2D>();
+        factor = 0.2f;
+        x = 10;
+        y = 10;
         anim = GetComponent<Animator>();
-        endPosition = transform.position;
+        mapLogic = GameObject.Find("MapLogic");
+        map = mapLogic.GetComponent<MapLogic>();
     }
 
     public void Update()
     {
-        Debug.Log(movementState);
-        anim.SetBool("is_walking", movementState == MovementState.Moving);
+        anim.SetBool("is_walking", moving);
         anim.SetFloat("input_x", input.x);
         anim.SetFloat("input_y", input.y);
+        cam.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
 
-        
 
-        switch (movementState)
+        if (moving)
         {
-            case MovementState.Standing:
-                input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-                if (Mathf.Abs(input.x) > Mathf.Abs(input.y))
-                {
-                    input.y = 0;
-                    gridOrientation = Orientation.Horizontal;
-                }
-                else
-                {
-                    input.x = 0;
-                    gridOrientation = Orientation.Vertical;
-                }
-
-
-                if (input != Vector2.zero)
-                {
-                    if (t < 1f)
-                    {
-                        t += Time.deltaTime * (moveSpeed / gridSize) * factor;
-                    }
-                    else
-                    {
-                        movementState = MovementState.Moving;
-                        move();
-                    }
-                }
-                break;
-
-            case MovementState.Moving:
-                if (t < 1f)
-                {
-                    t += Time.deltaTime * (moveSpeed / gridSize) * factor;
-                    transform.position = Vector3.Lerp(startPosition, endPosition, t);
-                    cam.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
-                }
-                else
-                {
-                    movementState = MovementState.Standing;
-                }
-                break;
-
-            case MovementState.Sliding:
-                input = new Vector2(input.x, input.y);
-                if (t < 1f)
-                {
-                    t += Time.deltaTime * (moveSpeed / gridSize) * factor;
-                    transform.position = Vector3.Lerp(startPosition, endPosition, t);
-                    cam.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
-                }
-                else
-                {
-                    transform.position = endPosition;
-                    move();
-                }
-                break;
-
-        }
-    }
-
-    public void move()
-    {
-        startPosition = endPosition;
-        t = 0;
-
-        if (gridOrientation == Orientation.Horizontal)
-        {
-            endPosition = new Vector3(startPosition.x + System.Math.Sign(input.x) * gridSize, startPosition.y, startPosition.z);
+            if (t < factor)
+            {
+                t += Time.deltaTime;
+                rBody.MovePosition(Vector3.Lerp(startPosition, endPosition, t * 1/factor));
+            }
+            else
+            {
+                Debug.Log(x + " " + y);
+                t = 0;
+                rBody.MovePosition(endPosition);
+                moving = false;
+            }
 
         }
         else
         {
-            endPosition = new Vector3(startPosition.x, startPosition.y + System.Math.Sign(input.y) * gridSize, startPosition.z);
-        }
-    }
-
-    public void OnCollisionEnter2D(Collision2D coll)
-    {
-        if(coll.gameObject.tag == "Ice")
-        {
-            movementState = MovementState.Sliding;
-        }
-        if (coll.gameObject.tag == "Wall")
-        {
-            if(movementState == MovementState.Moving)
+            if(!sliding) input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+            if (Mathf.Abs(input.x) > Mathf.Abs(input.y))
             {
-                movementState = MovementState.Standing;
+                input.x = System.Math.Sign(input.x);
+                input.y = 0;
+                targetX = x + (int)input.x;
+                targetY = y;
+                gridOrientation = Orientation.Horizontal;
+            }
+            else if (Mathf.Abs(input.x) < Mathf.Abs(input.y))
+            {
+                input.x = 0;
+                input.y = System.Math.Sign(input.y);
+                targetX = x;
+                targetY = y  + (int)input.y * -1;
+                gridOrientation = Orientation.Vertical;
             }
             else
             {
-                movementState = MovementState.Collided;
+                input = Vector2.zero;
             }
-            transform.position = startPosition;
+
+
+            if (input != Vector2.zero)
+            {
+                startPosition = rBody.position;
+                endPosition = new Vector3(startPosition.x + input.x * gridSize, startPosition.y + input.y * gridSize, startPosition.z);
+                switch(map.getTile(targetX, targetY))
+                {
+                    case MapLogic.GROUND:
+                        x = targetX;
+                        y = targetY;
+                        moving = true;
+                        break;
+
+                    case MapLogic.ICE:
+                        x = targetX;
+                        y = targetY;
+                        moving = true;
+                        sliding = true;
+                        break;
+
+                    case MapLogic.WALL:
+                        sliding = false;
+                        break;
+                }
+            }
         }
-        
     }
 }
