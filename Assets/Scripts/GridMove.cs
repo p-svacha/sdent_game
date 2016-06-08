@@ -33,8 +33,8 @@ class GridMove : MonoBehaviour
     {
         rBody = GetComponent<Rigidbody2D>();
         factor = 0.2f;
-        x = 10;
-        y = 10;
+        x = 12;
+        y = 12;
         anim = GetComponent<Animator>();
         mapLogic = GameObject.Find("MapLogic");
         map = mapLogic.GetComponent<MapLogic>();
@@ -57,7 +57,6 @@ class GridMove : MonoBehaviour
             }
             else
             {
-                Debug.Log(x + " " + y);
                 t = 0;
                 rBody.MovePosition(endPosition);
                 moving = false;
@@ -93,19 +92,28 @@ class GridMove : MonoBehaviour
             {
                 startPosition = rBody.position;
                 endPosition = new Vector3(startPosition.x + input.x * gridSize, startPosition.y + input.y * gridSize, startPosition.z);
-                switch(map.getTile(targetX, targetY))
+                Rock targetRock = map.rockAt(targetX, targetY);
+                switch (map.getTile(targetX, targetY))
                 {
                     case MapLogic.GROUND:
                         x = targetX;
                         y = targetY;
                         moving = true;
+                        sliding = false;
                         break;
 
                     case MapLogic.ICE:
-                        x = targetX;
-                        y = targetY;
-                        moving = true;
-                        sliding = true;
+                        if (targetRock != null)
+                        {
+                            targetRock.moveTo((int)input.x, (int)input.y);
+                        }
+                        else
+                        {
+                            x = targetX;
+                            y = targetY;
+                            moving = true;
+                            sliding = true;
+                        }
                         break;
 
                     case MapLogic.WALL:
