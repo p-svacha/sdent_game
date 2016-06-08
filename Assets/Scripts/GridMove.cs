@@ -33,6 +33,7 @@ class GridMove : MonoBehaviour
     public void Start()
     {
         anim = GetComponent<Animator>();
+        endPosition = transform.position;
     }
 
     public void Update()
@@ -97,6 +98,7 @@ class GridMove : MonoBehaviour
                 }
                 else
                 {
+                    transform.position = endPosition;
                     move();
                 }
                 break;
@@ -106,19 +108,17 @@ class GridMove : MonoBehaviour
 
     public void move()
     {
-        startPosition = transform.position;
+        startPosition = endPosition;
         t = 0;
 
         if (gridOrientation == Orientation.Horizontal)
         {
-            endPosition = new Vector3(startPosition.x + System.Math.Sign(input.x) * gridSize,
-                startPosition.y, startPosition.z + System.Math.Sign(input.y) * gridSize);
+            endPosition = new Vector3(startPosition.x + gridSize, startPosition.y, startPosition.z);
 
         }
         else
         {
-            endPosition = new Vector3(startPosition.x + System.Math.Sign(input.x) * gridSize,
-                startPosition.y + System.Math.Sign(input.y) * gridSize, startPosition.z);
+            endPosition = new Vector3(startPosition.x, startPosition.y + gridSize, startPosition.z);
         }
     }
 
