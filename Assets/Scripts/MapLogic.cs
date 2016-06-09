@@ -39,12 +39,13 @@ public class MapLogic : MonoBehaviour {
         };
 
         rock = new Rock[4];
-
+        
         for (int i = 0; i < 4; i++)
         {
             rock[i] = GameObject.Find("rock" + i).GetComponent<Rock>();
             Debug.Log("success");
         }
+        
     }
 	
     public int getTile(int x, int y)

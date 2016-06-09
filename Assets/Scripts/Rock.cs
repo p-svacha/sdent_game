@@ -24,7 +24,9 @@ public class Rock : MonoBehaviour {
             startPosition = rBody.position;
             this.x += x;
             this.y += y;
+
             endPosition = new Vector2(startPosition.x + x * gridSize, startPosition.y + y * gridSize);
+            moving = true;
         }
     }
 	
