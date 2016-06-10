@@ -9,9 +9,17 @@ public class MapLogic : MonoBehaviour {
     public const int BARRIER = 3;
     public const int HOLE = 4;
 
+    public float gridSize = 0.32f;
+
     private int[,] map;
 
     private Rock[] rock;
+
+    int[,] rockpos =
+{
+            {16,21,18,4 },
+            {16,17,3,13 }
+     };
 
     // Use this for initialization
     void Start () {
@@ -38,14 +46,28 @@ public class MapLogic : MonoBehaviour {
             { 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2 }
         };
 
-        rock = new Rock[4];
+        setUpRocks();
         
+    }
+
+
+    private void setUpRocks()
+    {
+        rock = new Rock[4];
+
+
+
         for (int i = 0; i < 4; i++)
         {
             rock[i] = GameObject.Find("rock" + i).GetComponent<Rock>();
-            Debug.Log("success");
+
+            rock[i].actualPos = new Position(rockpos[0,i], rockpos[1,i]);
         }
-        
+
+        for (int i = 0; i < 4; i++)
+        {
+            rock[i].rBody.position = new Vector2((rock[i].actualPos.x + 0.5f) * gridSize, -(rock[i].actualPos.y + 0.5f) * gridSize);
+        }
     }
 	
     public int getTile(int x, int y)
@@ -57,14 +79,23 @@ public class MapLogic : MonoBehaviour {
     {
         for(int i = 0; i < rock.Length; i++)
         {
-            if (rock[i].x == x && rock[i].y == y) return rock[i];
+            if (rock[i].actualPos.x == x && rock[i].actualPos.y == y) return rock[i];
         }
         return null;
     }
 
-    public void moveRock(Rock r, int x, int y)
+    public void holeGetsFilled(bool isPlayer)
     {
-        r.moveTo(x, y);
+        if (isPlayer)
+        {
+            //reset player
+        } else
+        {
+            //destroy rock
+        }
+
+        //replace hole with ground
+        //replace right Barrier with ice
     }
 
     public void update()
@@ -72,4 +103,24 @@ public class MapLogic : MonoBehaviour {
 
     }
 
+}
+
+public enum Orientation
+{
+    Horizontal,
+    Vertical
+};
+
+public class Position
+{
+    public int x { get; set; }
+    public int y { get; set; }
+
+    public Position() { }
+
+    public Position(int x, int y)
+    {
+        this.x = x;
+        this.y = y;
+    }
 }

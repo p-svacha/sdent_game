@@ -4,21 +4,11 @@ using UnityEngine;
 class GridMove : MonoBehaviour
 {
 
-    public float gridSize;
-    public Camera cam;
-
-    private enum Orientation
-    {
-        Horizontal,
-        Vertical
-    };
-    private Orientation gridOrientation = Orientation.Horizontal;
-
-    private int x, y, targetX, targetY;
+    private Camera cam;
+    private Position actualPos, targetPos;
     private bool moving;
     private bool sliding;
     private Rigidbody2D rBody;
-    private GameObject mapLogic;
     private MapLogic map;
 
     private Vector2 input;
@@ -33,19 +23,20 @@ class GridMove : MonoBehaviour
     {
         rBody = GetComponent<Rigidbody2D>();
         factor = 0.2f;
-        x = 14;
-        y = 10;
+        actualPos = new Position(13,12);
+        targetPos = new Position();
+        input = new Vector2();
         anim = GetComponent<Animator>();
-        mapLogic = GameObject.Find("MapLogic");
-        map = mapLogic.GetComponent<MapLogic>();
-       
+        map = GameObject.Find("MapLogic").GetComponent<MapLogic>();
+        cam = Camera.FindObjectOfType<Camera>();
+
 
         initPlayer();
     }
 
-    private void initPlayer()
+    public void initPlayer()
     {
-        rBody.position = new Vector2((x + 0.5f) * gridSize, -(y + 0.2f) * gridSize);
+        rBody.position = new Vector2((actualPos.x + 0.5f) * map.gridSize, -(actualPos.y + 0.2f) * map.gridSize);
         cam.transform.position = rBody.position;
     }
 
@@ -56,13 +47,17 @@ class GridMove : MonoBehaviour
         anim.SetFloat("input_y", input.y);
         cam.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
 
+        move();
+    }
 
+    public void move()
+    {
         if (moving)
         {
             if (t < factor)
             {
                 t += Time.deltaTime;
-                rBody.MovePosition(Vector3.Lerp(startPosition, endPosition, t * 1/factor));
+                rBody.MovePosition(Vector3.Lerp(startPosition, endPosition, t * 1 / factor));
             }
             else
             {
@@ -74,22 +69,20 @@ class GridMove : MonoBehaviour
         }
         else
         {
-            if(!sliding) input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+            if (!sliding) input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
             if (Mathf.Abs(input.x) > Mathf.Abs(input.y))
             {
                 input.x = System.Math.Sign(input.x);
                 input.y = 0;
-                targetX = x + (int)input.x;
-                targetY = y;
-                gridOrientation = Orientation.Horizontal;
+                targetPos.x = actualPos.x + (int)input.x;
+                targetPos.y = actualPos.y;
             }
             else if (Mathf.Abs(input.x) < Mathf.Abs(input.y))
             {
                 input.x = 0;
                 input.y = System.Math.Sign(input.y);
-                targetX = x;
-                targetY = y  + (int)input.y * -1;
-                gridOrientation = Orientation.Vertical;
+                targetPos.x = actualPos.x;
+                targetPos.y = actualPos.y + (int)input.y * -1;
             }
             else
             {
@@ -100,13 +93,13 @@ class GridMove : MonoBehaviour
             if (input != Vector2.zero)
             {
                 startPosition = rBody.position;
-                endPosition = new Vector3(startPosition.x + input.x * gridSize, startPosition.y + input.y * gridSize, startPosition.z);
-                Rock targetRock = map.rockAt(targetX, targetY);
-                switch (map.getTile(targetX, targetY))
+                endPosition = new Vector3(startPosition.x + input.x * map.gridSize, startPosition.y + input.y * map.gridSize, startPosition.z);
+                Rock targetRock = map.rockAt(targetPos.x, targetPos.y);
+                switch (map.getTile(targetPos.x, targetPos.y))
                 {
                     case MapLogic.GROUND:
-                        x = targetX;
-                        y = targetY;
+                        actualPos.x = targetPos.x;
+                        actualPos.y = targetPos.y;
                         moving = true;
                         sliding = false;
                         break;
@@ -116,23 +109,29 @@ class GridMove : MonoBehaviour
                         {
                             endPosition = startPosition;
                             sliding = false;
-                            moving = false;
-                            targetRock.moveTo((int)input.x, (int)input.y);
+                            targetRock.startRockMove(input);
                         }
                         else
                         {
-                            x = targetX;
-                            y = targetY;
+                            actualPos.x = targetPos.x;
+                            actualPos.y = targetPos.y;
                             moving = true;
                             sliding = true;
                         }
                         break;
 
                     case MapLogic.WALL:
+                    case MapLogic.BARRIER:
                         sliding = false;
                         break;
+
                     case MapLogic.HOLE:
+                        actualPos.x = targetPos.x;
+                        actualPos.y = targetPos.y;
+                        moving = true;
                         sliding = false;
+
+                        map.holeGetsFilled(true);
                         break;
                 }
 
