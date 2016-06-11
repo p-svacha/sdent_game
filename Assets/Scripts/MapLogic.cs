@@ -84,18 +84,42 @@ public class MapLogic : MonoBehaviour {
         return null;
     }
 
-    public void holeGetsFilled(bool isPlayer)
+    public void holeGetsFilled(Position pos)
     {
-        if (isPlayer)
-        {
-            //reset player
-        } else
-        {
-            //destroy rock
-        }
 
         //replace hole with ground
+        map[pos.y, pos.x] = MapLogic.GROUND;
+
+
         //replace right Barrier with ice
+        switch (pos.y)
+        {
+            case 16:
+                for (var i = 11; i <= 16; i++)
+                {
+                    map[14, i] = MapLogic.ICE;
+                }
+                break;
+            case 17:
+                for (var i = 22; i <= 24; i++)
+                {
+                    map[11, i] = MapLogic.ICE;
+                }
+                break;
+            case 9:
+                for (var i = 22; i <= 25; i++)
+                {
+                    map[8, i] = MapLogic.ICE;
+                }
+                break;
+            case 5:
+                for (var i = 2; i <= 4; i++)
+                {
+                    map[i, 12] = MapLogic.ICE;
+                }
+                break;
+        }
+
     }
 
     public void update()

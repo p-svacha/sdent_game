@@ -66,7 +66,8 @@ public class Rock : MonoBehaviour {
                 if (map.getTile(actualPos.x,actualPos.y) == MapLogic.HOLE)
                 {
                     moving = false;
-                    map.holeGetsFilled(false);
+                    map.holeGetsFilled(actualPos);
+                    Destroy(this);
                 } else
                 {
                     switch (map.getTile(targetPos.x, targetPos.y))

@@ -23,7 +23,7 @@ class GridMove : MonoBehaviour
     {
         rBody = GetComponent<Rigidbody2D>();
         factor = 0.2f;
-        actualPos = new Position(13,12);
+        actualPos = new Position();
         targetPos = new Position();
         input = new Vector2();
         anim = GetComponent<Animator>();
@@ -36,7 +36,10 @@ class GridMove : MonoBehaviour
 
     public void initPlayer()
     {
+        actualPos = new Position(13, 16);
         rBody.position = new Vector2((actualPos.x + 0.5f) * map.gridSize, -(actualPos.y + 0.2f) * map.gridSize);
+        startPosition = rBody.position;
+        endPosition = rBody.position;
         cam.transform.position = rBody.position;
     }
 
@@ -90,14 +93,23 @@ class GridMove : MonoBehaviour
             }
 
 
-            if (input != Vector2.zero)
+            if (map.getTile(actualPos.x, actualPos.y) == MapLogic.HOLE)
+            {
+                moving = false;
+                sliding = false;
+                map.holeGetsFilled(actualPos);
+                initPlayer();
+            }
+            else if (input != Vector2.zero)
             {
                 startPosition = rBody.position;
                 endPosition = new Vector3(startPosition.x + input.x * map.gridSize, startPosition.y + input.y * map.gridSize, startPosition.z);
                 Rock targetRock = map.rockAt(targetPos.x, targetPos.y);
+
                 switch (map.getTile(targetPos.x, targetPos.y))
                 {
                     case MapLogic.GROUND:
+                    case MapLogic.HOLE:
                         actualPos.x = targetPos.x;
                         actualPos.y = targetPos.y;
                         moving = true;
@@ -123,15 +135,6 @@ class GridMove : MonoBehaviour
                     case MapLogic.WALL:
                     case MapLogic.BARRIER:
                         sliding = false;
-                        break;
-
-                    case MapLogic.HOLE:
-                        actualPos.x = targetPos.x;
-                        actualPos.y = targetPos.y;
-                        moving = true;
-                        sliding = false;
-
-                        map.holeGetsFilled(true);
                         break;
                 }
 
