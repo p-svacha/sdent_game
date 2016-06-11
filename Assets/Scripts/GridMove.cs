@@ -45,9 +45,16 @@ class GridMove : MonoBehaviour
 
     public void Update()
     {
-        anim.SetBool("is_walking", moving);
-        anim.SetFloat("input_x", input.x);
-        anim.SetFloat("input_y", input.y);
+        if (sliding)
+        {
+            anim.SetBool("is_walking", false);
+        } else 
+        {
+            anim.SetBool("is_walking", moving);
+            anim.SetFloat("input_x", input.x);
+            anim.SetFloat("input_y", input.y);
+        }
+
         cam.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
 
         move();
@@ -99,6 +106,10 @@ class GridMove : MonoBehaviour
                 sliding = false;
                 map.holeGetsFilled(actualPos);
                 initPlayer();
+            }
+            else if (actualPos.y == 0){
+                //load lvl 2
+                Debug.Log("load lvl2");
             }
             else if (input != Vector2.zero)
             {

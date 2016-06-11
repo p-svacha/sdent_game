@@ -67,7 +67,7 @@ public class Rock : MonoBehaviour {
                 {
                     moving = false;
                     map.holeGetsFilled(actualPos);
-                    Destroy(this);
+                    Destroy(this.gameObject);
                 } else
                 {
                     switch (map.getTile(targetPos.x, targetPos.y))
