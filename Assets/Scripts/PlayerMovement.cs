@@ -5,13 +5,14 @@ public class PlayerMovement : MonoBehaviour {
     
 	Rigidbody2D rBody;
 	Animator anim;
-    public Camera cam;
+    Camera cam;
 
 	// Use this for initialization
 	void Start () {
 		rBody = GetComponent<Rigidbody2D>();
 		anim = GetComponent<Animator>();
-	}
+        cam = Camera.FindObjectOfType<Camera>();
+    }
 	
 	// Update is called once per frame
 	void Update () {
