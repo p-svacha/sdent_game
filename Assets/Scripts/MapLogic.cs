@@ -25,8 +25,8 @@ public class MapLogic : MonoBehaviour {
     void Start () {
         map = new int[,] {
             { 2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,2,2,2,2,2,2,2,2,2,2,2,2,2 },
-            { 2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,2,2,2,2,2,2,2,2,2,2,2,2,2 },
-            { 2,2,1,2,1,1,1,1,1,1,2,2,3,0,0,2,2,1,2,1,1,1,1,1,1,1,2,2 },
+            { 2,2,2,2,2,2,2,2,2,2,2,2,2,0,0,2,2,1,1,1,2,2,2,2,2,2,2,2 },
+            { 2,2,1,2,1,1,1,1,1,1,2,2,3,0,0,2,2,1,2,0,1,1,1,1,1,1,2,2 },
             { 2,2,1,1,1,2,1,1,1,1,1,1,3,0,0,2,1,0,1,1,2,1,1,1,1,1,2,2 },
             { 2,2,1,1,1,1,1,1,1,1,1,1,3,0,0,2,1,2,2,1,1,1,1,1,2,1,2,2 },
             { 2,2,1,0,0,1,1,0,1,1,2,2,2,2,2,2,1,2,4,1,1,1,1,1,1,1,2,2 },
@@ -99,24 +99,28 @@ public class MapLogic : MonoBehaviour {
                 {
                     map[14, i] = MapLogic.ICE;
                 }
+                Destroy(GameObject.Find("Barrier 1"));
                 break;
             case 17:
                 for (var i = 22; i <= 24; i++)
                 {
                     map[11, i] = MapLogic.ICE;
                 }
+                Destroy(GameObject.Find("Barrier 2"));
                 break;
             case 9:
                 for (var i = 22; i <= 25; i++)
                 {
                     map[8, i] = MapLogic.ICE;
                 }
+                Destroy(GameObject.Find("Barrier 3"));
                 break;
             case 5:
                 for (var i = 2; i <= 4; i++)
                 {
                     map[i, 12] = MapLogic.ICE;
                 }
+                Destroy(GameObject.Find("Barrier 4"));
                 break;
         }
 
