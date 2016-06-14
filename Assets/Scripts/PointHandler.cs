@@ -17,31 +17,23 @@ public class PointHandler : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	    if (meatCount == 0)
-        {
-            //remove Barrier
-        }
-        if (lifeCount == 0)
-        {
-            //gameover
-        }
+
 	}
 
     void OnCollisionEnter2D(Collision2D coll)
     {
         if (coll.gameObject == GameObject.Find("boss_cook"))
         {
-            lifeCount--;
-            initPlayer();
-        } else
+            OnDamage();
+        }
+        else
         {
             GameObject[] go = GameObject.FindGameObjectsWithTag("enemy");
             for (int i = 0; i < go.Length; i++)
             {
                 if (coll.gameObject == go[i])
                 {
-                    lifeCount--;
-                    initPlayer();
+                    OnDamage();
                     break;
                 }
             }
@@ -53,13 +45,34 @@ public class PointHandler : MonoBehaviour {
                 {
                     meatCount--;
                     Destroy(go[i]);
+                    if (meatCount == 0)
+                    {
+                        //remove Barrier
+                    }
                     break;
                 }
             }
         }
     }
 
-    private void initPlayer()
+    public void OnDamage()
+    {
+        lifeCount--;
+        if (lifeCount == 0)
+        {
+            //gameover
+        }
+        if (transform.childCount > 0)
+        {
+            Destroy(transform.GetChild(0).gameObject);
+            FindObjectOfType<PlayerMovement>().EndSwordSwing();
+        }
+        InitPlayer();
+    }
+
+
+
+    private void InitPlayer()
     {
         GetComponent<Rigidbody2D>().position = startPosition;
     }

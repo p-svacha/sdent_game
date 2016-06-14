@@ -4,24 +4,28 @@ using System.Collections;
 public class SpawnMonsterFly : MonoBehaviour
 {
     public GameObject enemy;                // The enemy prefab to be spawned.
-    public float spawnTime = 3f;            // How long between each spawn.
-    public float spawnX;
-    public float spawnY;
+    private GameObject go;
+    private bool spawning = false;
 
     // Use this for initialization
     void Start()
     {
-        // Call the Spawn function after a delay of the spawnTime and then continue to call after the same amount of time.
-        InvokeRepeating("Spawn", spawnTime, spawnTime);
+        Spawn();
     }
 
     void Spawn()
     {
+        go = (GameObject)Instantiate(enemy, transform.position, new Quaternion(0, 0, 0, 0));
+        spawning = false;
+    }
 
-        Vector3 pos = new Vector3(spawnX, spawnY);
-
-        // Create an instance of the enemy prefab at the randomly selected spawn point's position and rotation.
-        Instantiate(enemy, pos, new Quaternion(0,0,0,0));
+    void Update()
+    {
+        if (go == null && spawning == false)
+        {
+            spawning = true;
+            Invoke("Spawn", 3);
+        }
     }
 
 }

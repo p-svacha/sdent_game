@@ -15,21 +15,25 @@ public class BossTrigger : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("coll true");
-
         if (other.gameObject == GameObject.Find("Player"))
         {
-            FindObjectOfType<BossCook>().EnableFight(true);
+            var bc = FindObjectOfType<BossCook>();
+            if (bc != null)
+            {
+                bc.EnableFight(true);
+            }
         }
     }
 
     void OnTriggerExit2D(Collider2D other)
     {
-        Debug.Log("coll false");
-
         if (other.gameObject == GameObject.Find("Player"))
         {
-            FindObjectOfType<BossCook>().EnableFight(false);
+            var bc = FindObjectOfType<BossCook>();
+            if (bc != null)
+            {
+                bc.EnableFight(false);
+            }
         }
     }
 }

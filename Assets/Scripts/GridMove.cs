@@ -57,10 +57,10 @@ class GridMove : MonoBehaviour
 
         cam.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
 
-        move();
+        Move();
     }
 
-    public void move()
+    public void Move()
     {
         if (moving)
         {
