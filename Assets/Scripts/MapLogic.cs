@@ -5,6 +5,7 @@ public class MapLogic : MonoBehaviour {
 
     private Camera cam;
     private Vector3 camTarget;
+    private GameObject player;
     private bool camOnBarrier;
     bool destroyed;
     private int camBarrier;
@@ -17,6 +18,8 @@ public class MapLogic : MonoBehaviour {
     public const int HOLE = 4;
 
     public float gridSize = 0.32f;
+    private float dampTime = 0.08f;
+    private Vector3 velocity = Vector3.zero;
 
     private int[,] map;
 
@@ -54,6 +57,7 @@ public class MapLogic : MonoBehaviour {
         };
 
         cam = Camera.FindObjectOfType<Camera>();
+        player = GameObject.Find("Player");
         setUpRocks();
         
     }
@@ -63,13 +67,9 @@ public class MapLogic : MonoBehaviour {
 
         // Smooth camera 
 
-        float dampTime = 0.08f;
-        Vector3 velocity = Vector3.zero;
-
         Vector3 point = cam.WorldToViewportPoint(camTarget);
         Vector3 delta = camTarget - cam.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, point.z)); //(new Vector3(0.5, 0.5, point.z));
-        Vector3 destination = cam.transform.position + delta;
-        cam.transform.position = Vector3.SmoothDamp(cam.transform.position, destination, ref velocity, dampTime);
+        cam.transform.position = Vector3.SmoothDamp(cam.transform.position, cam.transform.position + delta, ref velocity, dampTime);
 
         // Camera to barrier
         if (camOnBarrier)
@@ -89,7 +89,7 @@ public class MapLogic : MonoBehaviour {
         }
         else
         {
-            camTarget = GameObject.Find("Player").transform.position;
+            camTarget = player.transform.position;
         }
     }
 
