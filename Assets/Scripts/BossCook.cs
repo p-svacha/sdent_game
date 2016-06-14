@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class boss_cook : MonoBehaviour
-{
+public class BossCook : MonoBehaviour {
 
     GameObject player;
     Rigidbody2D rb2d;
     Rigidbody2D playerBody;
     Vector2 startposition;
+    Animator anim;
+    bool fighting;
 
     // Use this for initialization
     void Start()
@@ -15,22 +16,24 @@ public class boss_cook : MonoBehaviour
         rb2d = GetComponent<Rigidbody2D>();
         playerBody = GameObject.Find("Player").GetComponent<Rigidbody2D>();
         startposition = rb2d.position;
+        anim = GetComponent<Animator>();
+        fighting = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        Vector2 distVec = playerBody.position - rb2d.position;
-
-        
-    }
-
-    void OnCollisionEnter2D(Collision2D collider)
-    {
-
-        if (collider.gameObject == player)
+        if (fighting)
         {
-            Destroy(rb2d.gameObject);
+            //move boss
         }
     }
+
+    public void EnableFight(bool fight)
+    {
+        anim.SetBool("boss_cook_fight", fight);
+        fighting = fight;
+    }
+
+
 }
