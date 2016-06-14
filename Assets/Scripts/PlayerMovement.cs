@@ -31,6 +31,16 @@ public class PlayerMovement : MonoBehaviour {
         }
 
         rBody.MovePosition(rBody.position + movementVector * Time.deltaTime);
-        cam.transform.position = new Vector3(rBody.position.x, rBody.position.y, -10);
+
+        // Smooth camera 
+
+        float dampTime = 0.08f;
+        Vector3 velocity = Vector3.zero;
+
+        Vector3 point = cam.WorldToViewportPoint(transform.position);
+        Vector3 delta = transform.position - cam.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, point.z)); //(new Vector3(0.5, 0.5, point.z));
+        Vector3 destination = cam.transform.position + delta;
+        cam.transform.position = Vector3.SmoothDamp(cam.transform.position, destination, ref velocity, dampTime);
+
     }
 }

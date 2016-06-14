@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 class GridMove : MonoBehaviour
 {
 
-    private Camera cam;
     private Position actualPos, targetPos;
     private bool moving;
     private bool sliding;
@@ -14,6 +14,8 @@ class GridMove : MonoBehaviour
     private Vector2 input;
     private Vector3 startPosition;
     private Vector3 endPosition;
+
+    private Transform cameraTarget;
 
     private float t = 0;
     private float factor;
@@ -28,8 +30,7 @@ class GridMove : MonoBehaviour
         input = new Vector2();
         anim = GetComponent<Animator>();
         map = GameObject.Find("MapLogic").GetComponent<MapLogic>();
-        cam = Camera.FindObjectOfType<Camera>();
-
+        cameraTarget = transform;
 
         initPlayer();
     }
@@ -40,7 +41,6 @@ class GridMove : MonoBehaviour
         rBody.position = new Vector2((actualPos.x + 0.5f) * map.gridSize, -(actualPos.y + 0.2f) * map.gridSize);
         startPosition = rBody.position;
         endPosition = rBody.position;
-        cam.transform.position = rBody.position;
     }
 
     public void Update()
@@ -51,11 +51,7 @@ class GridMove : MonoBehaviour
         } else 
         {
             anim.SetBool("is_walking", moving);
-            anim.SetFloat("input_x", input.x);
-            anim.SetFloat("input_y", input.y);
         }
-
-        cam.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
 
         move();
     }
@@ -67,17 +63,17 @@ class GridMove : MonoBehaviour
             if (t < factor)
             {
                 t += Time.deltaTime;
-                rBody.MovePosition(Vector3.Lerp(startPosition, endPosition, t * 1 / factor));
+                rBody.MovePosition(Vector3.Lerp(startPosition, endPosition, t / factor));
             }
             else
             {
                 t = 0;
-                rBody.MovePosition(endPosition);
+                //rBody.MovePosition(endPosition);
                 moving = false;
             }
 
         }
-        else
+        if(!moving)
         {
             if (!sliding) input = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
             if (Mathf.Abs(input.x) > Mathf.Abs(input.y))
@@ -86,6 +82,7 @@ class GridMove : MonoBehaviour
                 input.y = 0;
                 targetPos.x = actualPos.x + (int)input.x;
                 targetPos.y = actualPos.y;
+                anim.SetBool("facing_right", input.x > 0);
             }
             else if (Mathf.Abs(input.x) < Mathf.Abs(input.y))
             {
@@ -108,8 +105,7 @@ class GridMove : MonoBehaviour
                 initPlayer();
             }
             else if (actualPos.y == 0){
-                //load lvl 2
-                Debug.Log("load lvl2");
+                SceneManager.LoadScene(2);  
             }
             else if (input != Vector2.zero)
             {
@@ -125,6 +121,7 @@ class GridMove : MonoBehaviour
                         actualPos.y = targetPos.y;
                         moving = true;
                         sliding = false;
+                        move();
                         break;
 
                     case MapLogic.ICE:
@@ -140,6 +137,7 @@ class GridMove : MonoBehaviour
                             actualPos.y = targetPos.y;
                             moving = true;
                             sliding = true;
+                            move();
                         }
                         break;
 
@@ -152,4 +150,5 @@ class GridMove : MonoBehaviour
             }
         }
     }
+
 }
