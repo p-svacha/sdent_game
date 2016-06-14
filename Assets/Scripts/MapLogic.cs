@@ -3,6 +3,13 @@ using System.Collections;
 
 public class MapLogic : MonoBehaviour {
 
+    private Camera cam;
+    private Vector3 camTarget;
+    private bool camOnBarrier;
+    bool destroyed;
+    private int camBarrier;
+    private float targetTime;
+
     public const int GROUND = 0;
     public const int ICE = 1;
     public const int WALL = 2;
@@ -46,8 +53,44 @@ public class MapLogic : MonoBehaviour {
             { 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2 }
         };
 
+        cam = Camera.FindObjectOfType<Camera>();
         setUpRocks();
         
+    }
+
+    public void Update()
+    {
+
+        // Smooth camera 
+
+        float dampTime = 0.08f;
+        Vector3 velocity = Vector3.zero;
+
+        Vector3 point = cam.WorldToViewportPoint(camTarget);
+        Vector3 delta = camTarget - cam.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, point.z)); //(new Vector3(0.5, 0.5, point.z));
+        Vector3 destination = cam.transform.position + delta;
+        cam.transform.position = Vector3.SmoothDamp(cam.transform.position, destination, ref velocity, dampTime);
+
+        // Camera to barrier
+        if (camOnBarrier)
+        {
+            if(Time.time > targetTime - 0.5f && !destroyed)
+            {
+                destroyed = true;
+                Destroy(GameObject.Find("Barrier " + camBarrier));
+
+            }
+            if(Time.time > targetTime)
+            {
+                camOnBarrier = false;
+                camTarget = GameObject.Find("Player").transform.position;
+                destroyed = false;
+            }
+        }
+        else
+        {
+            camTarget = GameObject.Find("Player").transform.position;
+        }
     }
 
 
@@ -99,39 +142,46 @@ public class MapLogic : MonoBehaviour {
                 {
                     map[14, i] = MapLogic.ICE;
                 }
-                Destroy(GameObject.Find("Barrier 1"));
+                camTarget = new Vector3(14 * 0.32f, -14 * 0.32f, 0);
+                camOnBarrier = true;
+                camBarrier = 1;
+                targetTime = Time.time + 1f;
                 break;
             case 17:
                 for (var i = 22; i <= 24; i++)
                 {
                     map[11, i] = MapLogic.ICE;
                 }
-                Destroy(GameObject.Find("Barrier 2"));
+                camTarget = new Vector3(23 * 0.32f, -11 * 0.32f, 0);
+                camOnBarrier = true;
+                camBarrier = 2;
+                targetTime = Time.time + 1f;
                 break;
             case 9:
                 for (var i = 22; i <= 25; i++)
                 {
                     map[8, i] = MapLogic.ICE;
                 }
-                Destroy(GameObject.Find("Barrier 3"));
+                camTarget = new Vector3(23 * 0.32f, -8 * 0.32f, 0);
+                camOnBarrier = true;
+                camBarrier = 3;
+                targetTime = Time.time + 1f;
                 break;
             case 5:
                 for (var i = 2; i <= 4; i++)
                 {
                     map[i, 12] = MapLogic.ICE;
                 }
-                Destroy(GameObject.Find("Barrier 4"));
+                camTarget = new Vector3(12 * 0.32f, -3 * 0.32f, 0);
+                camOnBarrier = true;
+                camBarrier = 4;
+                targetTime = Time.time + 1f;
                 break;
         }
 
     }
-
-    public void update()
-    {
-
-    }
-
 }
+
 
 public enum Orientation
 {
