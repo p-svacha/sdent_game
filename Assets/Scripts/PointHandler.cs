@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using UnityEngine.SceneManagement;
 
 public class PointHandler : MonoBehaviour {
 
@@ -60,7 +61,7 @@ public class PointHandler : MonoBehaviour {
         lifeCount--;
         if (lifeCount == 0)
         {
-            //gameover
+            SceneManager.LoadScene(0);
         }
         if (transform.childCount > 0)
         {

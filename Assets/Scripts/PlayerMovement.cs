@@ -6,9 +6,11 @@ public class PlayerMovement : MonoBehaviour {
 	Rigidbody2D rBody;
 	Animator anim;
     Camera cam;
+    public GameObject sword;
+    bool swordSwinging = false;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 		rBody = GetComponent<Rigidbody2D>();
 		anim = GetComponent<Animator>();
         cam = Camera.FindObjectOfType<Camera>();
@@ -22,8 +24,7 @@ public class PlayerMovement : MonoBehaviour {
         if(movementVector != Vector2.zero)
         {
             anim.SetBool("is_walking", true);
-            anim.SetFloat("input_x", movementVector.x);
-            anim.SetFloat("input_y", movementVector.y);
+            anim.SetBool("facing_right", movementVector.x > 0);
         }
         else
         {
@@ -42,5 +43,17 @@ public class PlayerMovement : MonoBehaviour {
         Vector3 destination = cam.transform.position + delta;
         cam.transform.position = Vector3.SmoothDamp(cam.transform.position, destination, ref velocity, dampTime);
 
+        if (Input.GetKeyDown("space") && !swordSwinging)
+        {
+            swordSwinging = true;
+            var s = (GameObject)Instantiate(sword, rBody.position + new Vector2(0.4f, 0), new Quaternion());
+            s.transform.parent = transform;
+        }
+
+    }
+
+    public void EndSwordSwing()
+    {
+        swordSwinging = false;
     }
 }

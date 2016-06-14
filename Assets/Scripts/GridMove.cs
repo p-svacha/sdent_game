@@ -24,7 +24,7 @@ class GridMove : MonoBehaviour
     public void Start()
     {
         rBody = GetComponent<Rigidbody2D>();
-        factor = 0.2f;
+        factor = 0.3f;
         actualPos = new Position();
         targetPos = new Position();
         input = new Vector2();
@@ -68,7 +68,7 @@ class GridMove : MonoBehaviour
             else
             {
                 t = 0;
-                //rBody.MovePosition(endPosition);
+                rBody.MovePosition(endPosition);
                 moving = false;
             }
 
