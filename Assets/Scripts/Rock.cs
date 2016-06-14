@@ -58,7 +58,7 @@ public class Rock : MonoBehaviour {
         {
             targetPos.x = actualPos.x + (int)input.x;
             targetPos.y = actualPos.y + (int)input.y * -1;
-
+             
             if (input != Vector2.zero)
             {
                 startPosition = rBody.position;
