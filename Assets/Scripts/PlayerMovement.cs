@@ -12,6 +12,8 @@ public class PlayerMovement : MonoBehaviour {
     private float targetTime;
     public GameObject sword;
     bool swordSwinging = false;
+	public AudioClip sound;
+	public AudioClip barrier;
 
     // Use this for initialization
     void Start () {
@@ -46,6 +48,7 @@ public class PlayerMovement : MonoBehaviour {
         {
             Destroy(GameObject.Find("Barrier"));
             barrierDestroyed = true;
+			GetComponent<AudioSource>().PlayOneShot (barrier);
         }
         if(camOnBarrier && Time.time > targetTime)
         {
@@ -64,6 +67,7 @@ public class PlayerMovement : MonoBehaviour {
             swordSwinging = true;
             var s = (GameObject)Instantiate(sword, rBody.position + new Vector2(0.4f, 0), new Quaternion());
             s.transform.parent = transform;
+			GetComponent<AudioSource>().PlayOneShot (sound);
         }
 
     }

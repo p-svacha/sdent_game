@@ -9,6 +9,8 @@ public class PointHandler : MonoBehaviour {
     private int lifeCount;
     private Vector2 startPosition;
     private PlayerMovement pm;
+	public AudioClip sound;
+	public AudioClip getHit;
 
 	// Use this for initialization
 	void Start () {
@@ -47,8 +49,10 @@ public class PointHandler : MonoBehaviour {
                 if (coll.gameObject == go[i])
                 {
                     meatCount--;
+					GetComponent<AudioSource>().PlayOneShot (sound);
                     Destroy(go[i]);
                     if (meatCount == 0)
+
                     {
                         pm.cameraOnBarrier();
                     }
@@ -62,6 +66,7 @@ public class PointHandler : MonoBehaviour {
     {
         Destroy(GameObject.Find("Heart" + lifeCount));
         lifeCount--;
+		GetComponent<AudioSource>().PlayOneShot (getHit);
         if (lifeCount == 0)
         {
             SceneManager.LoadScene(0);

@@ -10,6 +10,7 @@ public class MapLogic : MonoBehaviour {
     bool destroyed;
     private int camBarrier;
     private float targetTime;
+	public AudioClip barrierSound;
 
     public const int GROUND = 0;
     public const int ICE = 1;
@@ -78,6 +79,7 @@ public class MapLogic : MonoBehaviour {
             {
                 destroyed = true;
                 Destroy(GameObject.Find("Barrier " + camBarrier));
+				GetComponent<AudioSource>().PlayOneShot (barrierSound);
 
             }
             if(Time.time > targetTime)

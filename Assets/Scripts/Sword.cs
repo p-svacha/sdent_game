@@ -6,6 +6,7 @@ public class Sword : MonoBehaviour {
     float startTime;
     float endTime;
     Rigidbody2D pos;
+	public AudioClip hit;
 
     // Use this for initialization
     void Start () {
@@ -47,6 +48,7 @@ public class Sword : MonoBehaviour {
             if (other.gameObject == go[i])
             {
                 Destroy(go[i]);
+				GetComponent<AudioSource>().PlayOneShot (hit);
                 break;
             }
         }
