@@ -8,12 +8,14 @@ public class PointHandler : MonoBehaviour {
     private int meatCount;
     private int lifeCount;
     private Vector2 startPosition;
+    private PlayerMovement pm;
 
 	// Use this for initialization
 	void Start () {
         meatCount = 5;
         lifeCount = 3;
         startPosition = GetComponent<Rigidbody2D>().position;
+        pm = GameObject.Find("Player").GetComponent<PlayerMovement>();
 	}
 	
 	// Update is called once per frame
@@ -48,7 +50,7 @@ public class PointHandler : MonoBehaviour {
                     Destroy(go[i]);
                     if (meatCount == 0)
                     {
-                        //remove Barrier
+                        pm.cameraOnBarrier();
                     }
                     break;
                 }
@@ -58,6 +60,7 @@ public class PointHandler : MonoBehaviour {
 
     public void OnDamage()
     {
+        Destroy(GameObject.Find("Heart" + lifeCount));
         lifeCount--;
         if (lifeCount == 0)
         {

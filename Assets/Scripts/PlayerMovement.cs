@@ -3,9 +3,13 @@ using System.Collections;
 
 public class PlayerMovement : MonoBehaviour {
     
-	Rigidbody2D rBody;
-	Animator anim;
-    Camera cam;
+	private Rigidbody2D rBody;
+	private Animator anim;
+    private Camera cam;
+    private Vector3 camTarget;
+    private bool camOnBarrier;
+    private bool barrierDestroyed;
+    private float targetTime;
     public GameObject sword;
     bool swordSwinging = false;
 
@@ -38,8 +42,20 @@ public class PlayerMovement : MonoBehaviour {
         float dampTime = 0.08f;
         Vector3 velocity = Vector3.zero;
 
-        Vector3 point = cam.WorldToViewportPoint(transform.position);
-        Vector3 delta = transform.position - cam.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, point.z)); //(new Vector3(0.5, 0.5, point.z));
+        if(camOnBarrier && Time.time > targetTime - 0.5f && !barrierDestroyed)
+        {
+            Destroy(GameObject.Find("Barrier"));
+            barrierDestroyed = true;
+        }
+        if(camOnBarrier && Time.time > targetTime)
+        {
+            camOnBarrier = false;
+            camTarget = transform.position;
+        }
+        if(!camOnBarrier) camTarget = transform.position;
+
+        Vector3 point = cam.WorldToViewportPoint(camTarget);
+        Vector3 delta = camTarget - cam.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, point.z)); //(new Vector3(0.5, 0.5, point.z));
         Vector3 destination = cam.transform.position + delta;
         cam.transform.position = Vector3.SmoothDamp(cam.transform.position, destination, ref velocity, dampTime);
 
@@ -56,4 +72,11 @@ public class PlayerMovement : MonoBehaviour {
     {
         swordSwinging = false;
     }
-}
+
+    public void cameraOnBarrier()
+    {
+        camOnBarrier = true;
+        targetTime = Time.time + 1f;
+        this.camTarget = new Vector3(16 * 0.32f, -11 * 0.32f, 0);
+    }
+ }
